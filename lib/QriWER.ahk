@@ -11,9 +11,15 @@
  *   r := QriWER.Compare("The quick brown fox", "The quick brown fox")
  *   msgbox r.hits " " r.wer
  *
- * QriWER.Compare(ref, hyp) returns an object with:
+ * QriWER.Compare(ref, hyp)  [word-level, wer_default] returns:
  *   hits, substitutions, deletions, insertions,
- *   ref_words, hyp_words, wer, error
+ *   ref_words, hyp_words, wer, mer, wip, wil
+ *
+ * QriWER.CER(ref, hyp)      [char-level, cer_default] returns:
+ *   hits, substitutions, deletions, insertions,
+ *   ref_chars, hyp_chars, cer
+ *
+ * QriWER.Version() -> string
  *
  * Throws on native error.
  */
@@ -21,8 +27,9 @@ class QriWER {
     static hmodule := 0
     static dllPath := ""
     static funcCompare := 0
+    static funcCER := 0
     static funcVersion := 0
-    static structSize := 64
+    static structSize := 88
 
     static Init(dllPathOverride := "") {
         if (QriWER.hmodule)
@@ -42,6 +49,9 @@ class QriWER {
         QriWER.funcCompare := DllCall("GetProcAddress", "Ptr", QriWER.hmodule, "AStr", "qriwer_compare", "Ptr")
         if (!QriWER.funcCompare)
             throw "QriWER: GetProcAddress qriwer_compare failed (err=" A_LastError ")"
+        QriWER.funcCER := DllCall("GetProcAddress", "Ptr", QriWER.hmodule, "AStr", "qriwer_cer", "Ptr")
+        if (!QriWER.funcCER)
+            throw "QriWER: GetProcAddress qriwer_cer failed (err=" A_LastError ")"
         QriWER.funcVersion := DllCall("GetProcAddress", "Ptr", QriWER.hmodule, "AStr", "qriwer_version", "Ptr")
 
         return dllPathOverride
@@ -54,11 +64,14 @@ class QriWER {
         QriWER.hmodule := 0
         QriWER.dllPath := ""
         QriWER.funcCompare := 0
+        QriWER.funcCER := 0
         QriWER.funcVersion := 0
     }
 
     static Version() {
-        return "QriWER 1.0.0 / RapidFuzz-CPP / JiWER 4.0.0 compatible"
+        if (!QriWER.hmodule)
+            QriWER.Init()
+        return DllCall(QriWER.funcVersion, "AStr")
     }
 
     static Compare(ref, hyp) {
@@ -71,7 +84,7 @@ class QriWER {
             , "Ptr", buf
             , "Cdecl Int")
         if (ret != 0) {
-            errCode := NumGet(buf, 56, "Int")
+            errCode := NumGet(buf, 80, "Int")
             throw "QriWER: qriwer_compare failed (rc=" ret ", error=" errCode ")"
         }
         return {
@@ -82,6 +95,34 @@ class QriWER {
             ref_words:     NumGet(buf, 32, "Int64"),
             hyp_words:     NumGet(buf, 40, "Int64"),
             wer:           NumGet(buf, 48, "Double"),
+            mer:           NumGet(buf, 56, "Double"),
+            wip:           NumGet(buf, 64, "Double"),
+            wil:           NumGet(buf, 72, "Double"),
+            error:         0
+        }
+    }
+
+    static CER(ref, hyp) {
+        if (!QriWER.hmodule)
+            QriWER.Init()
+        buf := Buffer(QriWER.structSize, 0)
+        ret := DllCall(QriWER.funcCER
+            , "Str", ref
+            , "Str", hyp
+            , "Ptr", buf
+            , "Cdecl Int")
+        if (ret != 0) {
+            errCode := NumGet(buf, 80, "Int")
+            throw "QriWER: qriwer_cer failed (rc=" ret ", error=" errCode ")"
+        }
+        return {
+            hits:          NumGet(buf,  0, "Int64"),
+            substitutions: NumGet(buf,  8, "Int64"),
+            deletions:     NumGet(buf, 16, "Int64"),
+            insertions:    NumGet(buf, 24, "Int64"),
+            ref_chars:     NumGet(buf, 32, "Int64"),
+            hyp_chars:     NumGet(buf, 40, "Int64"),
+            cer:           NumGet(buf, 48, "Double"),
             error:         0
         }
     }
