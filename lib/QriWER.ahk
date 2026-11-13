@@ -24,7 +24,11 @@
  * Access via bracket notation (dot-notation is NOT supported on plain Maps
  * in this build): r["wer"].  Existence check: r.Has("wer").
  * 
- * Throws on native error.
+ * Compare/CER never throw — they always return a Map with all keys populated.
+ * On failure, the "error" key is non-zero and other values are zero.
+ * On success, "error" is 0.  Caller should check r["error"] before using results.
+ *
+ * Init/Release DO throw — DLL loading is a prerequisite, not an operation result.
  */
 class QriWER {
     static hmodule := 0
@@ -86,10 +90,6 @@ class QriWER {
             , "Str", hyp
             , "Ptr", buf
             , "Cdecl Int")
-        if(ret != 0) {
-            errCode := NumGet(buf, 80, "Int")
-            throw "QriWER: qriwer_compare failed (rc=" ret ", error=" errCode ")"
-        }
         return Map(
             "hits",          NumGet(buf, 0, "Int64"),
             "substitutions", NumGet(buf, 8, "Int64"),
@@ -101,7 +101,7 @@ class QriWER {
             "mer",           NumGet(buf, 56, "Double"),
             "wip",           NumGet(buf, 64, "Double"),
             "wil",           NumGet(buf, 72, "Double"),
-            "error",         0
+            "error",         (ret == 0) ? 0 : NumGet(buf, 80, "Int")
         )
     }
 
@@ -114,10 +114,6 @@ class QriWER {
             , "Str", hyp
             , "Ptr", buf
             , "Cdecl Int")
-        if(ret != 0) {
-            errCode := NumGet(buf, 80, "Int")
-            throw "QriWER: qriwer_cer failed (rc=" ret ", error=" errCode ")"
-        }
         return Map(
             "hits",          NumGet(buf, 0, "Int64"),
             "substitutions", NumGet(buf, 8, "Int64"),
@@ -126,7 +122,7 @@ class QriWER {
             "ref_chars",     NumGet(buf, 32, "Int64"),
             "hyp_chars",     NumGet(buf, 40, "Int64"),
             "cer",           NumGet(buf, 48, "Double"),
-            "error",         0
+            "error",         (ret == 0) ? 0 : NumGet(buf, 80, "Int")
         )
     }
 
