@@ -32,7 +32,12 @@ and token counts `ref_words` / `hyp_words` (for CER, `ref_chars` / `hyp_chars`).
 
 ### Steps
 
-From a **x64 Native Tools** prompt (or after calling `vcvars64.bat`), run:
+```bat
+:: From the project root
+src\build_shim.bat
+```
+
+This calls `vcvars64.bat`, then compiles with:
 
 ```bat
 cl.exe /nologo /std:c++17 /O2 /MD /W4 /EHsc /permissive- /utf-8 ^
@@ -41,7 +46,7 @@ cl.exe /nologo /std:c++17 /O2 /MD /W4 /EHsc /permissive- /utf-8 ^
   /link /DLL /OUT:QriWER.dll /IMPLIB:QriWER.lib
 ```
 
-This produces `QriWER.dll` (and the import stub `QriWER.lib`) in the project root.
+producing `QriWER.dll` (and the import stub `QriWER.lib`) in the project root.
 
 ## Public C ABI
 
