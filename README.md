@@ -152,30 +152,4 @@ The DLL is auto-discovered in this order:
 
 Or pass an explicit path: `QriWER.Init("C:\path\to\QriWER.dll")`.
 
-## Validation
 
-| Harness | Scope | Result |
-|---------|-------|--------|
-| C smoke test (`scratch/test_shim.c`) | hand-computed edge cases | pass |
-| AHK smoke test (`scratch/smoke_ahk.ahk`) | 7 cases across WER/MER/WIP/WIL/CER | 7/7 |
-| JiWER corpus (`scratch/corpus_validate.py`) | 796 paired chunks, all 5 measures + counts | 796/796, 0 mismatches |
-
-Corpus pairing: `chunks/pre-chunks.json[i]` (reference = `speech` key) vs
-`chunks/post-chunks/%06d(i+1)/out.txt` (hypothesis). Index 0 has empty speech
-(intentional skip). All measures compared within 1e-9 tolerance.
-
-## File layout
-
-```
-QriWER/
-├── QriWER.dll               # built DLL (gitignored)
-├── src/
-│   ├── qriwer_shim.cpp      # C shim + RapidFuzz integration (WER+MER+WIP+WIL+CER)
-│   └── qriwer_ws_table.h    # Unicode whitespace ranges (generated)
-├── lib/
-│   ├── QriWER.ahk           # AHK v2.1 wrapper (Compare + CER + Version)
-│   └── Aris/g33kdude/cjson.ahk  # JSON lib for test harnesses
-├── scratch/                 # build scripts, test harnesses (gitignored)
-├── chunks/                  # validation corpus (gitignored)
-└── resources/rapidfuzz-cpp/ # header-only dependency (gitignored)
-```
