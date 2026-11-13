@@ -1,4 +1,105 @@
 #Requires AutoHotkey v2.1-
+/**
+ * QriWER — AHKv2 JiWER-compatible word error rate.
+ *
+ * Wraps qriwer_shim.dll (C ABI, UTF-16 in) which implements JiWER 4.0.0
+ * wer_default tokenization + rapidfuzz-cpp Levenshtein alignment.
+ *
+ * Usage:
+ *   #Include <QriWER>
+ *   QriWER.Init()
+ *   r := QriWER.Compare("The quick brown fox", "The quick brown fox")
+ *   msgbox r.hits " " r.wer
+ *
+ * QriWER.Compare(ref, hyp) returns an object with:
+ *   hits, substitutions, deletions, insertions,
+ *   ref_words, hyp_words, wer, error
+ *
+ * Throws on native error.
+ */
 class QriWER {
+    static hmodule := 0
+    static dllPath := ""
+    static funcCompare := 0
+    static funcVersion := 0
+    static structSize := 64
 
+    static Init(dllPathOverride := "") {
+        if (QriWER.hmodule)
+            return QriWER.dllPath
+        if (dllPathOverride == "")
+            dllPathOverride := QriWER.__FindDefaultDll()
+        if (dllPathOverride == "")
+            throw "QriWER: DLL not found. Searched: " A_ScriptDir
+        if (!FileExist(dllPathOverride))
+            throw "QriWER: DLL does not exist: " dllPathOverride
+
+        QriWER.hmodule := DllCall("LoadLibrary", "Str", dllPathOverride, "Ptr")
+        if (!QriWER.hmodule)
+            throw "QriWER: LoadLibrary failed (err=" A_LastError ")"
+
+        QriWER.dllPath := dllPathOverride
+        QriWER.funcCompare := DllCall("GetProcAddress", "Ptr", QriWER.hmodule, "AStr", "qriwer_compare", "Ptr")
+        if (!QriWER.funcCompare)
+            throw "QriWER: GetProcAddress qriwer_compare failed (err=" A_LastError ")"
+        QriWER.funcVersion := DllCall("GetProcAddress", "Ptr", QriWER.hmodule, "AStr", "qriwer_version", "Ptr")
+
+        return dllPathOverride
+    }
+
+    static Release() {
+        if (!QriWER.hmodule)
+            return
+        DllCall("FreeLibrary", "Ptr", QriWER.hmodule)
+        QriWER.hmodule := 0
+        QriWER.dllPath := ""
+        QriWER.funcCompare := 0
+        QriWER.funcVersion := 0
+    }
+
+    static Version() {
+        return "QriWER 1.0.0 / RapidFuzz-CPP / JiWER 4.0.0 compatible"
+    }
+
+    static Compare(ref, hyp) {
+        if (!QriWER.hmodule)
+            QriWER.Init()
+        buf := Buffer(QriWER.structSize, 0)
+        ret := DllCall(QriWER.funcCompare
+            , "Str", ref
+            , "Str", hyp
+            , "Ptr", buf
+            , "Cdecl Int")
+        if (ret != 0) {
+            errCode := NumGet(buf, 56, "Int")
+            throw "QriWER: qriwer_compare failed (rc=" ret ", error=" errCode ")"
+        }
+        return {
+            hits:          NumGet(buf,  0, "Int64"),
+            substitutions: NumGet(buf,  8, "Int64"),
+            deletions:     NumGet(buf, 16, "Int64"),
+            insertions:    NumGet(buf, 24, "Int64"),
+            ref_words:     NumGet(buf, 32, "Int64"),
+            hyp_words:     NumGet(buf, 40, "Int64"),
+            wer:           NumGet(buf, 48, "Double"),
+            error:         0
+        }
+    }
+
+    static __FindDefaultDll() {
+        candidates := [
+            A_ScriptDir "\qriwer_shim.dll",
+            A_ScriptDir "\..\qriwer_shim.dll",
+            A_ScriptDir "\..\..\qriwer_shim.dll",
+            A_ScriptDir "\..\bin\qriwer_shim.dll",
+            A_ScriptDir "\bin\qriwer_shim.dll"
+        ]
+        i := 1
+        while (i <= candidates.length) {
+            if (FileExist(candidates[i]))
+                return candidates[i]
+            i++
+        }
+        return ""
+    }
 }

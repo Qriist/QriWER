@@ -2,3 +2,7 @@ resources
 scratch
 chunks
 lib/Aris
+qriwer_shim.dll
+qriwer_shim.lib
+qriwer_shim.exp
+qriwer_shim.pdb
