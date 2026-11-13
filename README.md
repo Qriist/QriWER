@@ -139,6 +139,53 @@ On success `r["error"]` is `0`; on failure it is non-zero and the numeric fields
 are zero. `Init`/`Release` still throw, since DLL loading is a prerequisite,
 not an operation result.
 
+### Sample result
+
+A lightly-edited 20-word line (the hypothesis only drops the two surrounding
+quote marks) run through both entry points:
+
+```text
+reference : His countenance instantly assumed an aspect of the deepest gloom, and he replied, "To seek one who fled from me."
+hypothesis: His countenance instantly assumed an aspect of the deepest gloom, and he replied, To seek one who fled from me.
+```
+
+```python
+QriWER.Compare(reference, hypothesis)   # word-level
+{
+  "error":         0,
+  "hits":          18,
+  "substitutions": 2,
+  "deletions":     0,
+  "insertions":    0,
+  "ref_words":     20,
+  "hyp_words":     20,
+  "wer":  0.10,    # (S+D+I)/(H+S+D)   = 2/20
+  "mer":  0.10,    # (S+D+I)/(H+S+D+I) = 2/20
+  "wip":  0.81,    # (H/refW)*(H/hypW) = (18/20)²
+  "wil":  0.19     # 1 - wip
+}
+
+QriWER.CER(reference, hypothesis)       # character-level
+{
+  "error":         0,
+  "hits":          111,
+  "substitutions": 0,
+  "deletions":     2,   # the two dropped " quote marks
+  "insertions":    0,
+  "ref_chars":     113,
+  "hyp_chars":     111,
+  "cer": 0.0177         # 2/113
+}
+```
+
+Notice the gap: **WER 0.10** vs. **CER 0.0177**. At word level the dropped
+quotes fuse onto the surrounding tokens (`"To`, `me."`), so the aligner counts
+2 of 20 words as substituted. At character level only the 2 quote characters
+differ (out of 113). CER is therefore the better choice for lightly-edited
+text; WER is the better choice when whole tokens (misrecognized words) are the
+concern. Float fields are shown rounded — the shim returns full precision
+(e.g. `wil` is exactly `0.18999999999999995`).
+
 The DLL is auto-discovered in this order:
 
 1. **Versioned Aris install** (libmagic pattern):
