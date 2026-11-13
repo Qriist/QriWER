@@ -28,24 +28,20 @@ and token counts `ref_words` / `hyp_words` (for CER, `ref_chars` / `hyp_chars`).
 ### Prerequisites
 - Visual Studio 2022 (any edition) with the C++ Desktop workload
 - AutoHotkey v2.1+ (`#Requires AutoHotkey v2.1-`)
-- `resources/rapidfuzz-cpp` (header-only, gitignored)
+- [RapidFuzz-CPP](https://github.com/rapidfuzz/rapidfuzz-cpp) (header-only) — clone into `resources/rapidfuzz-cpp`
 
 ### Steps
 
-```bat
-:: From the project root
-scratch\build_shim.bat
-```
-
-This runs `vcvars64.bat` then `cl.exe /std:c++17 /O2` to produce
-`QriWER.dll` in the project root.
-
-### Verify
+From a **x64 Native Tools** prompt (or after calling `vcvars64.bat`), run:
 
 ```bat
-scratch\run_detached.bat scratch\smoke_ahk.ahk scratch\smoke_ahk_result.json
-python scratch\corpus_validate.py   &&   echo JiWER 1:1 match
+cl.exe /nologo /std:c++17 /O2 /MD /W4 /EHsc /permissive- /utf-8 ^
+  /I resources\rapidfuzz-cpp /I src ^
+  src\qriwer_shim.cpp ^
+  /link /DLL /OUT:QriWER.dll /IMPLIB:QriWER.lib
 ```
+
+This produces `QriWER.dll` (and the import stub `QriWER.lib`) in the project root.
 
 ## Public C ABI
 
