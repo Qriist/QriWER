@@ -293,5 +293,5 @@ extern "C" __declspec(dllexport) int __stdcall qriwer_cer(
 }
 
 extern "C" __declspec(dllexport) const char* __stdcall qriwer_version() {
-    return "QriWER 1.1.0 / RapidFuzz-CPP header-only / JiWER 4.0.0 compatible";
+    return "QriWER 0.8.0 / RapidFuzz-CPP header-only / JiWER 4.0.0 compatible";
 }
