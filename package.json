@@ -1,12 +1,33 @@
-﻿{
-	"dependencies": {
-		"Cebolla/Timer": "^1.0.0",
-		"Chunjee/adash": "^v0.6.0",
-		"GroggyOtter/PeepAHK": "github:Qriist/PeepAHK@^v1.3.0 --main script\\Peep.v2.ahk",
-		"Qriist/LibQurl": "^v1.3.0",
-		"Qriist/Null": "github:Qriist/Null@^v1.0.0 --main Null.ahk",
-		"Qriist/libmagic": "github:Qriist/libmagic@^v0.80.0 --main Lib\\libmagic.ahk",
-		"SKAN/RunCMD": "aadeb56",
-		"g33kdude/cjson": "^2.1.0"
-	}
+{
+  "author": {
+    "email": "Qriist+QriWER@gmail.com",
+    "name": "Qriist",
+    "website": ""
+  },
+  "bugs": {
+    "url": "https://github.com/Qriist/QriWER/issues"
+  },
+  "dependencies": {
+    "g33kdude/cjson": "^2.1.0"
+  },
+  "description": "A JiWER-compatible word & character error rate wrapper for AHKv2",
+  "homepage": "",
+  "keywords": [
+    "wer",
+    "cer",
+    "jwer",
+    "error-rate",
+    "speech",
+    "asr",
+    "levenshtein",
+    "rapidfuzz"
+  ],
+  "license": "",
+  "main": "QriWER.ahk",
+  "name": "Qriist/QriWER",
+  "repository": {
+    "type": "github",
+    "url": "Qriist/QriWER"
+  },
+  "version": "v1.1.0"
 }
