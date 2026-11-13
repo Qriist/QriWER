@@ -119,6 +119,8 @@ cer = (refC == 0) ? I : (S+D+I)/(H+S+D)   # char-level
 
 ; Word-level: WER + MER + WIP + WIL
 r := QriWER.Compare("The quick brown fox", "The quick brown fox")
+if r["error"]
+    return   ; check r["error"] before using results
 ; r["hits"]=4, r["substitutions"]=0, r["wer"]=0
 
 r2 := QriWER.Compare("a b c", "a x c y")
@@ -131,6 +133,11 @@ c := QriWER.CER("kitten", "sitting")
 ; Existence check:
 ; r.Has("mer") -> 1
 ```
+
+`Compare` and `CER` **never throw** — they always return a fully-populated Map.
+On success `r["error"]` is `0`; on failure it is non-zero and the numeric fields
+are zero. `Init`/`Release` still throw, since DLL loading is a prerequisite,
+not an operation result.
 
 The DLL is auto-discovered in this order:
 
