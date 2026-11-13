@@ -7,9 +7,7 @@
   "bugs": {
     "url": "https://github.com/Qriist/QriWER/issues"
   },
-  "dependencies": {
-    "g33kdude/cjson": "^2.1.0"
-  },
+  "dependencies": {},
   "description": "A JiWER-compatible word & character error rate wrapper for AHKv2",
   "homepage": "",
   "keywords": [
