@@ -19,3 +19,9 @@ for %%f in (*.zip) do (
 )
 DEL *.zip
 cd ..
+
+rmdir /s /q rapidfuzz-cpp
+git clone https://github.com/rapidfuzz/rapidfuzz-cpp.git rapidfuzz-cpp
+
+rmdir /s /q taskflow
+git clone https://github.com/taskflow/taskflow.git taskflow
