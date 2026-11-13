@@ -2,7 +2,7 @@
 /**
  * QriWER — AHKv2 JiWER-compatible word error rate.
  * 
- * Wraps qriwer_shim.dll (C ABI, UTF-16 in) which implements JiWER 4.0.0
+ * Wraps QriWER.dll (C ABI, UTF-16 in) which implements JiWER 4.0.0
  * wer_default tokenization + rapidfuzz-cpp Levenshtein alignment.
  * 
  * Usage:
@@ -132,11 +132,11 @@ class QriWER {
 
     static __FindDefaultDll() {
         candidates := [
-            A_ScriptDir "\qriwer_shim.dll",
-            A_ScriptDir "\..\qriwer_shim.dll",
-            A_ScriptDir "\..\..\qriwer_shim.dll",
-            A_ScriptDir "\..\bin\qriwer_shim.dll",
-            A_ScriptDir "\bin\qriwer_shim.dll"
+            A_ScriptDir "\QriWER.dll",
+            A_ScriptDir "\..\QriWER.dll",
+            A_ScriptDir "\..\..\QriWER.dll",
+            A_ScriptDir "\..\bin\QriWER.dll",
+            A_ScriptDir "\bin\QriWER.dll"
         ]
         i := 1
         while(i <= candidates.length) {

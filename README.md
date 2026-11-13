@@ -5,7 +5,7 @@ using RapidFuzz-CPP (header-only) as the sequence-alignment engine.
 
 ## What it is
 
-A C ABI shim (`qriwer_shim.dll`) compiled from `src/qriwer_shim.cpp` that links
+A C ABI shim (`QriWER.dll`) compiled from `src/qriwer_shim.cpp` that links
 RapidFuzz-CPP as its alignment engine. An AHK v2.1 wrapper (`lib/QriWER.ahk`)
 calls the DLL and returns result objects. No Python, no subprocess, no
 additional runtime dependencies.
@@ -38,7 +38,7 @@ scratch\build_shim.bat
 ```
 
 This runs `vcvars64.bat` then `cl.exe /std:c++17 /O2` to produce
-`qriwer_shim.dll` in the project root.
+`QriWER.dll` in the project root.
 
 ### Verify
 
@@ -133,12 +133,12 @@ c := QriWER.CER("kitten", "sitting")
 ```
 
 The DLL is auto-discovered from:
-1. `A_ScriptDir\qriwer_shim.dll`
-2. `A_ScriptDir\..\qriwer_shim.dll`
-3. `A_ScriptDir\..\..\qriwer_shim.dll`
-4. `A_ScriptDir\bin\qriwer_shim.dll`
+1. `A_ScriptDir\QriWER.dll`
+2. `A_ScriptDir\..\QriWER.dll`
+3. `A_ScriptDir\..\..\QriWER.dll`
+4. `A_ScriptDir\bin\QriWER.dll`
 
-Or pass an explicit path: `QriWER.Init("C:\path\to\qriwer_shim.dll")`.
+Or pass an explicit path: `QriWER.Init("C:\path\to\QriWER.dll")`.
 
 ## Validation
 
@@ -156,7 +156,7 @@ Corpus pairing: `chunks/pre-chunks.json[i]` (reference = `speech` key) vs
 
 ```
 QriWER/
-├── qriwer_shim.dll          # built DLL (gitignored)
+├── QriWER.dll               # built DLL (gitignored)
 ├── src/
 │   ├── qriwer_shim.cpp      # C shim + RapidFuzz integration (WER+MER+WIP+WIL+CER)
 │   └── qriwer_ws_table.h    # Unicode whitespace ranges (generated)
