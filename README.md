@@ -132,11 +132,16 @@ c := QriWER.CER("kitten", "sitting")
 ; r.Has("mer") -> 1
 ```
 
-The DLL is auto-discovered from:
-1. `A_ScriptDir\QriWER.dll`
-2. `A_ScriptDir\..\QriWER.dll`
-3. `A_ScriptDir\..\..\QriWER.dll`
-4. `A_ScriptDir\bin\QriWER.dll`
+The DLL is auto-discovered in this order:
+
+1. **Versioned Aris install** (libmagic pattern):
+   the latest `lib\Aris\Qriist\QriWER@*\bin\QriWER.dll`
+2. **Naive `A_ScriptDir` candidates**:
+   - `A_ScriptDir\QriWER.dll`
+   - `A_ScriptDir\..\QriWER.dll`
+   - `A_ScriptDir\..\..\QriWER.dll`
+   - `A_ScriptDir\..\bin\QriWER.dll`
+   - `A_ScriptDir\bin\QriWER.dll`
 
 Or pass an explicit path: `QriWER.Init("C:\path\to\QriWER.dll")`.
 
