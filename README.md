@@ -119,14 +119,18 @@ cer = (refC == 0) ? I : (S+D+I)/(H+S+D)   # char-level
 
 ; Word-level: WER + MER + WIP + WIL
 r := QriWER.Compare("The quick brown fox", "The quick brown fox")
-; r.hits=4, r.substitutions=0, r.deletions=0, r.insertions=0, r.wer=0
+; r.Get("hits")=4, r.Get("substitutions")=0, r.Get("wer")=0
 
 r2 := QriWER.Compare("a b c", "a x c y")
-; r2.hits=2, r2.substitutions=1, r2.deletions=0, r2.insertions=1, r2.wer≈0.667
+; r2.Get("hits")=2, r2.Get("substitutions")=1, r2.Get("wer")≈0.667
 
 ; Character-level: CER
 c := QriWER.CER("kitten", "sitting")
-; c.hits=4, c.substitutions=2, c.deletions=0, c.insertions=1, c.cer=0.5
+; c.Get("hits")=4, c.Get("substitutions")=2, c.Get("cer")=0.5
+
+; Maps also support bracket notation and Has:
+; r["wer"] == r.Get("wer")
+; r.Has("mer") -> 1
 ```
 
 The DLL is auto-discovered from:

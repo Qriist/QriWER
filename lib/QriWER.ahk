@@ -9,7 +9,7 @@
  *   #Include <QriWER>
  *   QriWER.Init()
  *   r := QriWER.Compare("The quick brown fox", "The quick brown fox")
- *   msgbox r.hits " " r.wer
+ *   msgbox r.Get("hits") " " r.Get("wer")
  * 
  * QriWER.Compare(ref, hyp)  [word-level, wer_default] returns a Map with:
  *   hits, substitutions, deletions, insertions,
@@ -21,8 +21,8 @@
  * 
  * QriWER.Version() -> string
  * 
- * Access via dot notation (r.wer) or Map method (r["wer"]).
- * Maps support .Has(key) for existence checks.
+ * Access via Map methods (required — dot-notation is NOT supported on
+ * plain Maps in this build): r.Get("wer")  or  r["wer"]  or  r.Has("wer").
  * 
  * Throws on native error.
  */
