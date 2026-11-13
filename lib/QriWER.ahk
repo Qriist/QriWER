@@ -130,7 +130,36 @@ class QriWER {
         )
     }
 
+    static _findArisInstallDir(user, packageName) { ;dynamically finds a local versioned Aris installation
+        if DirExist(A_ScriptDir "\lib\Aris\" user) ;"top level" install
+            packageDir := A_ScriptDir "\lib\Aris\" user
+        else if DirExist(A_ScriptDir "\..\lib\Aris\" user) ;script one level down
+            packageDir := A_ScriptDir "\..\lib\Aris\" user
+        else
+            return ""
+        ArisDir := ""
+        loop files (packageDir "\" packageName "@*"), "D" {
+            ;should end up with the latest installation
+            ArisDir := packageDir "\" A_LoopFileName
+        }
+        return ArisDir
+    }
+
+    static _findDllFromAris() { ;resolves QriWER.dll from a versioned Aris install, "" if none
+        aris := QriWER._findArisInstallDir("Qriist", "QriWER")
+        if(aris == "")
+            return ""
+        dllPath := aris "\bin\QriWER.dll"
+        if(!FileExist(dllPath))
+            return ""
+        return dllPath
+    }
+
     static __FindDefaultDll() {
+        ;Prefer a versioned Aris install (libmagic.ahk pattern) before the naive A_ScriptDir checks
+        arisDll := QriWER._findDllFromAris()
+        if(arisDll != "")
+            return arisDll
         candidates := [
             A_ScriptDir "\QriWER.dll",
             A_ScriptDir "\..\QriWER.dll",
